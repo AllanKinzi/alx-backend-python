@@ -7,7 +7,7 @@ def stream_users():
         port=3306,
         user='root',
         password='Kenya@254!!',
-        database='python_be'
+        database='ALX_prodev'
         # database='ALX_prodev'
     )
     cursor = connection.cursor(dictionary=True)
