@@ -6,7 +6,7 @@ def stream_users_in_batches(batch_size):
         host='localhost',
         port=3306,
         user='root',
-        password='Kenya@254!!',
+        password='Passcode@254!!',
         database='ALX_prodev'
     )
     cursor = connection.cursor(dictionary=True)
