@@ -29,6 +29,7 @@ def batch_processing(batch_size):
         for user in batch:  # ✅ Loop 2
             if user['age'] > 25:
                 yield user  # ✅ Yield filtered user
+    return
 
 if __name__ == "__main__":
     for user in batch_processing(3):  # ✅ Loop 3
