@@ -86,7 +86,7 @@ REST_FRAMEWORK = {
     ],
     
     # Pagination
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'chats.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 20,
     
     # Filter backends
