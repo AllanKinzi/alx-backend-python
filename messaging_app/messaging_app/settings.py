@@ -69,7 +69,7 @@ REST_FRAMEWORK = {
     
     # Permission classes
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'chats.permissions.IsParticipantOfConversation',
     ],
     
     # Renderer classes
