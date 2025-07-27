@@ -30,7 +30,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         conversation_id = self.kwargs.get('conversation_id')
         return Message.objects.filter(
             conversation__id=conversation_id,
-            conversation__participants=self.request.user
+            conversation__participants=self.request.user.user_id
         )
 
     def perform_create(self, serializer):

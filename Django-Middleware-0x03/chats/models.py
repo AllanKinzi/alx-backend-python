@@ -130,7 +130,7 @@ class Message(models.Model):
         from django.core.exceptions import ValidationError
         
         if self.conversation and self.sender:
-            if not self.conversation.participants.filter(id=self.sender.id).exists():
+            if not self.conversation.participants.filter(id=self.sender.user_id).exists():
                 raise ValidationError(
                     "Sender must be a participant in the conversation."
                 )
