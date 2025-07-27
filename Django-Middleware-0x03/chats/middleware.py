@@ -4,6 +4,7 @@ from django.http import HttpResponseForbidden
 import logging
 from datetime import datetime
 from collections import defaultdict, deque
+from threading import Lock
 
 # Configure the logger
 logger = logging.getLogger(__name__)
@@ -92,3 +93,36 @@ class RolePermissionMiddleware:
                 return HttpResponseForbidden("403 Forbidden: Authentication required.")
 
         return self.get_response(request)
+    
+class OffensiveLanguageMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.request_log = defaultdict(list)  # {ip: [timestamps]}
+        self.lock = Lock()
+        self.limit = 5  # messages
+        self.window = 60  # seconds
+
+    def __call__(self, request):
+        if request.method == 'POST' and request.path.startswith("/chats/"):
+            ip = self.get_client_ip(request)
+            now = time.time()
+
+            with self.lock:
+                # Remove timestamps older than the window
+                self.request_log[ip] = [
+                    t for t in self.request_log[ip] if now - t < self.window
+                ]
+
+                if len(self.request_log[ip]) >= self.limit:
+                    return HttpResponseForbidden("403 Forbidden: Message rate limit exceeded (5 messages/minute).")
+
+                self.request_log[ip].append(now)
+
+        return self.get_response(request)
+
+    def get_client_ip(self, request):
+        """ Get the client's IP address, considering reverse proxy headers if needed """
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+        if x_forwarded_for:
+            return x_forwarded_for.split(",")[0]
+        return request.META.get("REMOTE_ADDR")
