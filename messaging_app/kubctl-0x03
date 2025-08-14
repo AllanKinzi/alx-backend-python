@@ -1,0 +1,31 @@
+#!/bin/bash
+
+DEPLOYMENT_FILE="messaging_app/blue_deployment.yaml"
+SERVICE_NAME="messaging-app-service"
+NAMESPACE="default"
+
+echo "🚀 Starting rolling update for Blue deployment..."
+
+# Apply the updated deployment file
+kubectl apply -f $DEPLOYMENT_FILE
+
+# Monitor the rollout status
+kubectl rollout status deployment/messaging-app-blue --namespace=$NAMESPACE
+
+# Test for downtime using curl in a loop
+APP_URL="http://$(minikube ip):$(kubectl get svc $SERVICE_NAME -o=jsonpath='{.spec.ports[0].nodePort}')"
+echo "🌍 Testing app for downtime on $APP_URL..."
+
+for i in {1..30}; do
+    RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $APP_URL)
+    if [ "$RESPONSE" -ne 200 ]; then
+        echo "⚠️ Downtime detected! HTTP status: $RESPONSE"
+    else
+        echo "✅ App responding with 200 OK"
+    fi
+    sleep 1
+done
+
+# Verify pods after rollout
+echo "📦 Pods after update:"
+kubectl get pods -l app=messaging-app,version=blue

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Deploy both versions
+kubectl apply -f messaging_app/blue_deployment.yaml
+kubectl apply -f messaging_app/green_deployment.yaml
+kubectl apply -f messaging_app/kubeservice.yaml
+
+# Show pods
+echo "Pods running:"
+kubectl get pods -l app=messaging-app
+
+# Check logs for both versions
+echo "Logs for BLUE:"
+kubectl logs -l version=blue --tail=20
+echo "Logs for GREEN:"
+kubectl logs -l version=green --tail=20
+
+echo "Blue-Green deployment applied. To switch traffic, edit kubeservice.yaml and change version selector."
